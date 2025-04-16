@@ -46,3 +46,28 @@ class LogicalExpression:
             return result
         except Exception as e:
             return f"Error evaluating expression: {e}"
+        
+#Creating a test Padawan to see how the evaluation works
+
+leon = Padawan(
+    name="Leon Brady",
+    age=11,
+    discipline_score=63,
+    force_sensitivity=86,
+    expression="loyal ∧ ¬impulsive ∧ patient",
+    truth_values={
+        "loyal": True,
+        "impulsive": False,
+        "patient": True})
+
+# Evaluate expression
+logic = LogicalExpression(leon.expression, leon.truth_values)
+result = logic.evaluate()
+
+# Print the results
+print("Padawan Info:")
+print(leon)
+print("\nLogic Evaluation:")
+print(f"Expression: {leon.expression}")
+print(f"With values: {leon.truth_values}")
+print(f"Result: {result}")
