@@ -20,3 +20,16 @@ class Padawan:
     def __str__(self):
         return f"{self.name} (Age: {self.age}) | Discipline: {self.discipline_score} | Force: {self.force_sensitivity}"
     
+class LogicalExpression:
+#Processes logical expressions for truth table evaluation.
+
+    def __init__(self, expression, truth_values):
+        self.expression = expression 
+        self.truth_values = truth_values  
+
+    def evaluate(self):
+    #Evaluates the logical expression using truth values.
+
+        expr = self.expression
+        for var, val in self.truth_values.items():
+            expr = expr.replace(var, str(val))
