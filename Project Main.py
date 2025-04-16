@@ -33,3 +33,16 @@ class LogicalExpression:
         expr = self.expression
         for var, val in self.truth_values.items():
             expr = expr.replace(var, str(val))
+
+    # Now we need to replace logical operators with symbols for Python
+        expr = expr.replace("∧", " and ")
+        expr = expr.replace("∨", " or ")
+        expr = expr.replace("¬", " not ")
+        expr = expr.replace("→", " <= ")  # Shows that p → q is equivalent to ¬p ∨ q
+        expr = expr.replace("↔", " == ")  # Equivalence
+
+        try:
+            result = eval(expr)
+            return result
+        except Exception as e:
+            return f"Error evaluating expression: {e}"
