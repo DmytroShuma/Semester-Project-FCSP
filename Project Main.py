@@ -47,27 +47,37 @@ class LogicalExpression:
         except Exception as e:
             return f"Error evaluating expression: {e}"
         
-#Creating a test Padawan to see how the evaluation works
 
-leon = Padawan(
-    name="Leon Brady",
-    age=11,
-    discipline_score=63,
-    force_sensitivity=86,
-    expression="loyal ∧ ¬impulsive ∧ patient",
-    truth_values={
-        "loyal": True,
-        "impulsive": False,
-        "patient": True})
+#Interactive interface for the Jedi to input their data and get results
+print("Welcome to the Jedi Padawan Sorting Tool (JPST)")
+name = input("Enter Padawan name: ")
+age = int(input("Enter Padawan age: "))
+discipline = int(input("Enter discipline score (0–100): "))
+force = float(input("Enter Force sensitivity (0.0–100.0): "))
+print("\nPlease answer the following with True or False:")
+loyal = input("Is the Padawan loyal to the Jedi Code? ").strip().capitalize() == "True"
+impulsive = input("Is the Padawan impulsive? ").strip().capitalize() == "True"
+patient = input("Can the Padawan be patient and wait for great results? ").strip().capitalize() == "True"
 
-# Evaluate expression
-logic = LogicalExpression(leon.expression, leon.truth_values)
+
+expression = "loyal ∧ ¬impulsive ∧ patient"
+truth_values = {
+    "loyal": loyal,
+    "impulsive": impulsive,
+    "patient": patient}
+
+# Create Padawan
+padawan = Padawan(name, age, discipline, force, expression, truth_values)
+
+# Analyzing logic
+logic = LogicalExpression(expression, truth_values)
 result = logic.evaluate()
 
-# Print the results
-print("Padawan Info:")
-print(leon)
+# Print results
+print("\nPadawan Info:")
+print(padawan)
+
 print("\nLogic Evaluation:")
-print(f"Expression: {leon.expression}")
-print(f"With values: {leon.truth_values}")
+print(f"Expression: {expression}")
+print(f"With values: {truth_values}")
 print(f"Result: {result}")
