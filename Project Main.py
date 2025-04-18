@@ -48,32 +48,41 @@ class LogicalExpression:
             return f"Error evaluating expression: {e}"
         
 
-#Interactive interface for the Jedi to input their data and get results
-print("Welcome to the Jedi Padawan Sorting Tool (JPST)")
-name = input("Enter Padawan name: ")
-age = int(input("Enter Padawan age: "))
-discipline = int(input("Enter discipline score (0–100): "))
-force = float(input("Enter Force sensitivity (0.0–100.0): "))
-print("\nPlease answer the following with True or False:")
-loyal = input("Is the Padawan loyal to the Jedi Code? ").strip().capitalize() == "True"
-impulsive = input("Is the Padawan impulsive? ").strip().capitalize() == "True"
-patient = input("Can the Padawan remain calm, composed and wait for great results? ").strip().capitalize() == "True"
-
-
-expression = "loyal ∧ ¬impulsive ∧ patient"
-truth_values = {
-    "loyal": loyal,
-    "impulsive": impulsive,
-    "patient": patient}
-
 #Descriptions for our variables
 meanings = {
     "loyal": "Is loyal to the Jedi Code",
     "impulsive": "Acts without thinking or control",
     "patient": "Able to remain calm, composed and wait for great results"}
 
-# Create Padawan
-padawan = Padawan(name, age, discipline, force, expression, truth_values)
+#Interactive interface for the Jedi to input their data about Padawans into a list and get results
+padawan_list = []
+
+print("Welcome to the Jedi Padawan Sorting Tool (JPST)")
+print("Please input Padawan profiles to evaluate readiness for training.")
+while True:
+    print("\n--- New Padawan Entry ---")
+    name = input("Enter Padawan name: ")
+    age = int(input("Enter Padawan age: "))
+    discipline = int(input("Enter discipline score (0–100): "))
+    force = float(input("Enter Force sensitivity (0.0–100.0): "))
+    
+    print("\nPlease answer the following with True or False:")
+    loyal = input("Is the Padawan loyal to the Jedi Code? ").strip().capitalize() == "True"
+    impulsive = input("Is the Padawan impulsive? ").strip().capitalize() == "True"
+    patient = input("Can the Padawan remain calm, composed and wait for great results? ").strip().capitalize() == "True"
+    
+    expression = "loyal ∧ ¬impulsive ∧ patient"
+    truth_values = {
+    "loyal": loyal,
+    "impulsive": impulsive,
+    "patient": patient}
+    
+    padawan = Padawan(name, age, discipline, force, expression, truth_values)
+    padawan_list.append(padawan)
+    
+    cont = input("Would you like to add another Padawan? (y/n): ").strip().lower()
+    if cont != "y":
+        break
 
 # Analyzing logic
 logic = LogicalExpression(expression, truth_values)
