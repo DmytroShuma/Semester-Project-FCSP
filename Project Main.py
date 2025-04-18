@@ -57,7 +57,7 @@ force = float(input("Enter Force sensitivity (0.0–100.0): "))
 print("\nPlease answer the following with True or False:")
 loyal = input("Is the Padawan loyal to the Jedi Code? ").strip().capitalize() == "True"
 impulsive = input("Is the Padawan impulsive? ").strip().capitalize() == "True"
-patient = input("Can the Padawan be patient and wait for great results? ").strip().capitalize() == "True"
+patient = input("Can the Padawan remain calm, composed and wait for great results? ").strip().capitalize() == "True"
 
 
 expression = "loyal ∧ ¬impulsive ∧ patient"
@@ -65,6 +65,12 @@ truth_values = {
     "loyal": loyal,
     "impulsive": impulsive,
     "patient": patient}
+
+#Descriptions for our variables
+meanings = {
+    "loyal": "Is loyal to the Jedi Code",
+    "impulsive": "Acts without thinking or control",
+    "patient": "Able to remain calm, composed and wait for great results"}
 
 # Create Padawan
 padawan = Padawan(name, age, discipline, force, expression, truth_values)
@@ -79,5 +85,8 @@ print(padawan)
 
 print("\nLogic Evaluation:")
 print(f"Expression: {expression}")
-print(f"With values: {truth_values}")
-print(f"Result: {result}")
+print("With values:")
+for var, val in truth_values.items():
+    meaning = meanings.get(var, "Unknown")
+    print(f"  {var} = {val}  -->  {meaning}")
+print(f"\nFinal Result: {result}")
