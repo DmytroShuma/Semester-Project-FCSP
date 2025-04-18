@@ -84,18 +84,26 @@ while True:
     if cont != "y":
         break
 
+print("\n\nJedi Council Evaluation Report:\n")
+
 # Analyzing logic
-logic = LogicalExpression(expression, truth_values)
-result = logic.evaluate()
+for padawan in padawan_list:
+    logic = LogicalExpression(expression, truth_values)
+    result = logic.evaluate()
 
-# Print results
-print("\nPadawan Info:")
+print("--------------------------------------------------")
+# Printing each padawan info from the list and separating each padawan with a dashed line.
 print(padawan)
-
-print("\nLogic Evaluation:")
 print(f"Expression: {expression}")
 print("With values:")
 for var, val in truth_values.items():
     meaning = meanings.get(var, "Unknown")
     print(f"  {var} = {val}  -->  {meaning}")
 print(f"\nFinal Result: {result}")
+
+if result is True:
+        print("This Padawan is READY for Jedi training.")
+elif result is False:
+        print("This Padawan is NOT ready. Further guidance required.")
+else:
+        print(f"Evaluation Error: {result}")
