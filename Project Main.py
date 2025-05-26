@@ -115,6 +115,11 @@ def get_bool(prompt):
     answer = input(prompt).strip().lower()
     return answer.startswith("t")  # Accepts 't', 'true', etc.
 
+def print_bar(label, value, max_value, width=40):
+    bar_length = int((value / max_value) * width)
+    bar = "▇" * bar_length
+    print(f"{label:<15}: {bar} {value:.2f} ms")
+
 def generate_padawans(n, expression_type="simple"):
     padawans = []
     for i in range(n):
@@ -164,6 +169,8 @@ for p in complex_list:
 insertion_sort_by_discipline(complex_list)
 complex_time = (time.time() - start) * 1000
 
+max_time = max(simple_time, complex_time)
+
 # Show results
 for padawan in simple_list:
     print (padawan)
@@ -172,8 +179,8 @@ for padawan in complex_list:
     print (padawan)
 
 print("\nLogic Analysis Timing for 200 Padawans in each list)")
-print(f"Simple Logic List:  {simple_time:.2f} ms")
-print(f"Complex Logic List: {complex_time:.2f} ms")
+print_bar("Simple Logic List", simple_time, max_time)
+print_bar("Complex Logic List", complex_time, max_time)
 
 #
 #
