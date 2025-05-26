@@ -93,6 +93,15 @@ def merge(left, right):
     result.extend(right[j:])
     return result
 
+#Linear Search function
+def search_ready_padawans(padawans, min_force=0):
+    ready_list = []
+    for padawan in padawans:
+        if padawan.logic_result is True and padawan.force_sensitivity >= min_force:
+            ready_list.append(padawan)
+    return ready_list
+
+
 #Descriptions for our variables
 meanings = {
     "loyal": "Is loyal to the Jedi Code",
@@ -157,3 +166,13 @@ elif padawan.logic_result is False:
         print("This Padawan is NOT ready. Further guidance required.")
 else:
         print(f"Evaluation Error: {padawan.logic_result}")
+
+# Testing search functions: finding all logic-approved and ready Padawans with force sensitivity >= 50
+matching = search_ready_padawans(padawan_list, min_force=50)
+
+print("\n\n Search Results: Ready for training Padawans with Force sensitivity ≥ 50\n")
+if matching:
+    for p in matching:
+        print(f"- {p.name} | Force: {p.force_sensitivity} | Discipline: {p.discipline_score}")
+else:
+    print("No matching Padawans found.")
