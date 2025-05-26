@@ -118,7 +118,7 @@ def get_bool(prompt):
 def print_bar(label, value, max_value, width=40):
     bar_length = int((value / max_value) * width)
     bar = "▇" * bar_length
-    print(f"{label:<15}: {bar} {value:.2f} ms")
+    print(f"{label:<20}: {bar} {value:.2f} ms")
 
 def generate_padawans(n, expression_type="simple"):
     padawans = []
