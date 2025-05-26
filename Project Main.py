@@ -1,5 +1,6 @@
 import time
 import copy
+import random
 #JPST - Jedi Padawan Sorting Tool
 # It is a tool for evaluating Padawan candidates using logic expressions
 # and numerical attributes to assist Jedi Masters in selecting their apprentices.
@@ -20,7 +21,7 @@ class Padawan:
 
 
     def __str__(self):
-        return f"{self.name} (Age: {self.age}) | Discipline: {self.discipline_score} | Force: {self.force_sensitivity}"
+        return f"{self.name} (Age: {self.age}) | Discipline: {self.discipline_score} | Force: {self.force_sensitivity} | Logic: {self.expression}"
     
 class LogicalExpression:
 #Processes logical expressions for truth table evaluation.
@@ -114,10 +115,73 @@ def get_bool(prompt):
     answer = input(prompt).strip().lower()
     return answer.startswith("t")  # Accepts 't', 'true', etc.
 
+def generate_padawans(n, expression_type="simple"):
+    padawans = []
+    for i in range(n):
+        name = f"Auto_{i}"
+        age = random.randint(10, 18)
+        discipline = random.randint(0, 100)
+        force = round(random.uniform(0, 100), 2)
+
+        # Random True/False values
+        loyal = random.choice([True, False])
+        impulsive = random.choice([True, False])
+        patient = random.choice([True, False])
+
+        truth_values = {
+            "loyal": loyal,
+            "impulsive": impulsive,
+            "patient": patient
+        }
+
+        if expression_type == "simple":
+            expression = "loyal ∧ patient"
+        else:
+            expression = "¬loyal ∨ (patient ∧ ¬impulsive)"
+
+        padawan = Padawan(name, age, discipline, force, expression, truth_values)
+        padawans.append(padawan)
+    
+    return padawans
+
+#Testing random list creation and its logic analysis perfomance
+simple_list = generate_padawans(200, "simple")
+complex_list = generate_padawans(200, "complex")
+
+# Simple logic analysis perfomance
+start = time.time()
+for p in simple_list:
+    logic = LogicalExpression(p.expression, p.truth_values)
+    p.logic_result = logic.evaluate()
+insertion_sort_by_discipline(simple_list)
+simple_time = (time.time() - start) * 1000
+
+# Complex logic analysis perfomance
+start = time.time()
+for p in complex_list:
+    logic = LogicalExpression(p.expression, p.truth_values)
+    p.logic_result = logic.evaluate()
+insertion_sort_by_discipline(complex_list)
+complex_time = (time.time() - start) * 1000
+
+# Show results
+for padawan in simple_list:
+    print (padawan)
+
+for padawan in complex_list:
+    print (padawan)
+
+print("\nLogic Analysis Timing for 200 Padawans in each list)")
+print(f"Simple Logic List:  {simple_time:.2f} ms")
+print(f"Complex Logic List: {complex_time:.2f} ms")
+
+#
+#
+#
 #Interactive interface for the Jedi to input their data about Padawans into a list and get results
 padawan_list = []
 
-print("Welcome to the Jedi Padawan Sorting Tool (JPST)")
+print("\n\nWelcome to the Jedi Padawan Sorting Tool (JPST)")
 print("Please input Padawan profiles to evaluate readiness for training.")
 while True:
     print("\n--- New Padawan Entry ---")
