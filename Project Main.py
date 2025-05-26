@@ -1,3 +1,5 @@
+import time
+import copy
 #JPST - Jedi Padawan Sorting Tool
 # It is a tool for evaluating Padawan candidates using logic expressions
 # and numerical attributes to assist Jedi Masters in selecting their apprentices.
@@ -159,6 +161,26 @@ elif sort_choice == "2":
 else:
     print("Invalid choice. Defaulting to Insertion Sort.")
     padawan_list = merge_sort_by_force(padawan_list) #If input is invalid - system will default to using Merge sorting function. 
+
+# Before printing results, the system will evaluate how fast was the sorting process
+insertion_list = copy.deepcopy(padawan_list)
+merge_list = copy.deepcopy(padawan_list)
+
+# Timing of insertion sort
+start_time = time.time()
+insertion_sort_by_discipline(insertion_list)
+insertion_duration = (time.time() - start_time) * 1000  # in milliseconds
+
+# Timing of merge sort
+start_time = time.time()
+merge_list = merge_sort_by_force(merge_list)
+merge_duration = (time.time() - start_time) * 1000  # in milliseconds
+
+# Perfomace results
+print("\nSorting Performance Result")
+print(f"Insertion Sort Time: {insertion_duration:.2f} ms")
+print(f"Merge Sort Time:     {merge_duration:.2f} ms")
+
 
 print("\n\nJedi Council Evaluation Report:\n")
 
