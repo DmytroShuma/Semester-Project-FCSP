@@ -142,11 +142,23 @@ while True:
     if cont != "y":
         break
 
+print("\nDate Sorting Options:")
+print("1 - Sort by Discipline (Insertion Sort)")
+print("2 - Sort by Force Sensitivity (Merge Sort)")
+
+sort_choice = input("Choose sorting method (1 or 2): ").strip()
+
 for padawan in padawan_list:
     logic = LogicalExpression(padawan.expression, padawan.truth_values)
     padawan.logic_result = logic.evaluate()
 
-padawan_list = merge_sort_by_force(padawan_list)
+if sort_choice == "1":
+    insertion_sort_by_discipline(padawan_list)
+elif sort_choice == "2":
+    padawan_list = merge_sort_by_force(padawan_list)
+else:
+    print("Invalid choice. Defaulting to Insertion Sort.")
+    padawan_list = merge_sort_by_force(padawan_list) #If input is invalid - system will default to using Merge sorting function. 
 
 print("\n\nJedi Council Evaluation Report:\n")
 
