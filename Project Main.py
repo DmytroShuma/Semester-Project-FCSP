@@ -54,6 +54,10 @@ meanings = {
     "impulsive": "Acts without thinking or control",
     "patient": "Able to remain calm, composed and wait for great results"}
 
+def get_bool(prompt):
+    answer = input(prompt).strip().lower()
+    return answer.startswith("t")  # Accepts 't', 'true', etc.
+
 #Interactive interface for the Jedi to input their data about Padawans into a list and get results
 padawan_list = []
 
@@ -67,10 +71,10 @@ while True:
     force = float(input("Enter Force sensitivity (0.0–100.0): "))
     
     print("\nPlease answer the following with True or False:")
-    loyal = input("Is the Padawan loyal to the Jedi Code? ").strip().capitalize() == "True"
-    impulsive = input("Is the Padawan impulsive? ").strip().capitalize() == "True"
-    patient = input("Can the Padawan remain calm, composed and wait for great results? ").strip().capitalize() == "True"
-    
+    loyal = get_bool("Is the Padawan loyal to the Jedi Code? (t/f): ")
+    impulsive = get_bool("Is the Padawan impulsive? (t/f): ")
+    patient = get_bool("Can the Padawan remain calm and composed? (t/f): ")
+
     expression = "loyal ∧ ¬impulsive ∧ patient"
     truth_values = {
     "loyal": loyal,
@@ -84,26 +88,40 @@ while True:
     if cont != "y":
         break
 
+def insertion_sort_by_discipline(padawans):
+
+    # Insertion sort by discipline_score (descending), then logic_result (True first)
+    for i in range(1, len(padawans)):
+        key = padawans[i]
+        j = i - 1
+        while j >= 0 and (
+            padawans[j].discipline_score < key.discipline_score or
+            (padawans[j].discipline_score == key.discipline_score and not padawans[j].logic_result and key.logic_result)
+        ):
+            padawans[j + 1] = padawans[j]
+            j -= 1
+        padawans[j + 1] = key
+
 print("\n\nJedi Council Evaluation Report:\n")
 
-# Analyzing logic
+insertion_sort_by_discipline(padawan_list)
+
 for padawan in padawan_list:
-    logic = LogicalExpression(expression, truth_values)
+    logic = LogicalExpression(padawan.expression, padawan.truth_values)
     result = logic.evaluate()
 
-print("--------------------------------------------------")
-# Printing each padawan info from the list and separating each padawan with a dashed line.
-print(padawan)
-print(f"Expression: {expression}")
-print("With values:")
-for var, val in truth_values.items():
-    meaning = meanings.get(var, "Unknown")
-    print(f"  {var} = {val}  -->  {meaning}")
-print(f"\nFinal Result: {result}")
+    print("--------------------------------------------------")
+    print(padawan)
+    print(f"Expression: {padawan.expression}")
+    print("With values:")
+    for var, val in padawan.truth_values.items():
+        meaning = meanings.get(var, "Unknown")
+        print(f"  {var} = {val}  -->  {meaning}")
+    print(f"\nFinal Result: {result}")
 
-if result is True:
+    if result is True:
         print("This Padawan is READY for Jedi training.")
-elif result is False:
+    elif result is False:
         print("This Padawan is NOT ready. Further guidance required.")
-else:
+    else:
         print(f"Evaluation Error: {result}")
