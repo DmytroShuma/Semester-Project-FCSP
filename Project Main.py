@@ -89,6 +89,10 @@ while True:
         break
 
 def insertion_sort_by_discipline(padawans):
+    # Evaluate logic for all Padawans before sorting
+    for padawan in padawans:
+        logic = LogicalExpression(padawan.expression, padawan.truth_values)
+        padawan.logic_result = logic.evaluate()
 
     # Insertion sort by discipline_score (descending), then logic_result (True first)
     for i in range(1, len(padawans)):
