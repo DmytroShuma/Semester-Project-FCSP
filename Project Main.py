@@ -47,6 +47,51 @@ class LogicalExpression:
         except Exception as e:
             return f"Error evaluating expression: {e}"
         
+def insertion_sort_by_discipline(padawans):   #Insertion sorting function
+    # Evaluate logic for all Padawans before sorting
+    for padawan in padawans:
+        logic = LogicalExpression(padawan.expression, padawan.truth_values)
+        padawan.logic_result = logic.evaluate()
+
+    # Insertion sort by discipline_score (descending), then logic_result (True first)
+    for i in range(1, len(padawans)):
+        key = padawans[i]
+        j = i - 1
+        while j >= 0 and (
+            padawans[j].discipline_score < key.discipline_score or
+            (padawans[j].discipline_score == key.discipline_score and not padawans[j].logic_result and key.logic_result)
+        ):
+            padawans[j + 1] = padawans[j]
+            j -= 1
+        padawans[j + 1] = key
+
+def merge_sort_by_force(padawans):     #Merge sorting function
+    if len(padawans) <= 1:
+        return padawans
+
+    mid = len(padawans) // 2
+    left = merge_sort_by_force(padawans[:mid])
+    right = merge_sort_by_force(padawans[mid:])
+
+    return merge(left, right)
+
+
+def merge(left, right):
+    result = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        # Compare by force_sensitivity first, then logic_result (True > False)
+        if (left[i].force_sensitivity > right[j].force_sensitivity or
+            (left[i].force_sensitivity == right[j].force_sensitivity and left[i].logic_result and not right[j].logic_result)):
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
 
 #Descriptions for our variables
 meanings = {
@@ -88,44 +133,27 @@ while True:
     if cont != "y":
         break
 
-def insertion_sort_by_discipline(padawans):
-    # Evaluate logic for all Padawans before sorting
-    for padawan in padawans:
-        logic = LogicalExpression(padawan.expression, padawan.truth_values)
-        padawan.logic_result = logic.evaluate()
+for padawan in padawan_list:
+    logic = LogicalExpression(padawan.expression, padawan.truth_values)
+    padawan.logic_result = logic.evaluate()
 
-    # Insertion sort by discipline_score (descending), then logic_result (True first)
-    for i in range(1, len(padawans)):
-        key = padawans[i]
-        j = i - 1
-        while j >= 0 and (
-            padawans[j].discipline_score < key.discipline_score or
-            (padawans[j].discipline_score == key.discipline_score and not padawans[j].logic_result and key.logic_result)
-        ):
-            padawans[j + 1] = padawans[j]
-            j -= 1
-        padawans[j + 1] = key
+padawan_list = merge_sort_by_force(padawan_list)
 
 print("\n\nJedi Council Evaluation Report:\n")
 
-insertion_sort_by_discipline(padawan_list)
-
 for padawan in padawan_list:
-    logic = LogicalExpression(padawan.expression, padawan.truth_values)
-    result = logic.evaluate()
-
-    print("--------------------------------------------------")
-    print(padawan)
-    print(f"Expression: {padawan.expression}")
-    print("With values:")
-    for var, val in padawan.truth_values.items():
+ print("--------------------------------------------------")
+ print(padawan)
+ print(f"Expression: {padawan.expression}")
+ print("With values:")
+ for var, val in padawan.truth_values.items():
         meaning = meanings.get(var, "Unknown")
         print(f"  {var} = {val}  -->  {meaning}")
-    print(f"\nFinal Result: {result}")
+ print(f"\nFinal Result: {padawan.logic_result}")
 
-    if result is True:
+if padawan.logic_result is True:
         print("This Padawan is READY for Jedi training.")
-    elif result is False:
+elif padawan.logic_result is False:
         print("This Padawan is NOT ready. Further guidance required.")
-    else:
-        print(f"Evaluation Error: {result}")
+else:
+        print(f"Evaluation Error: {padawan.logic_result}")
