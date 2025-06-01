@@ -1,6 +1,7 @@
 import time
 import copy
 import random
+import pandas as pd
 #JPST - Jedi Padawan Sorting Tool
 # It is a tool for evaluating Padawan candidates using logic expressions
 # and numerical attributes to assist Jedi Masters in selecting their apprentices.
@@ -63,6 +64,47 @@ class ReadyAndForceSensitive(Evaluatable):
 
     def evaluate(self):
         return self.padawan.logic_result is True and self.padawan.force_sensitivity >= self.threshold
+
+def load_padawans_from_csv(filename):
+    try:
+        df = pd.read_csv(filename)
+        padawans = []
+        for _, row in df.iterrows():
+            truth_values = {
+                "loyal": bool(row['loyal']),
+                "impulsive": bool(row['impulsive']),
+                "patient": bool(row['patient'])
+            }
+            expression = "loyal ∧ ¬impulsive ∧ patient"
+            padawan = Padawan(
+                name=row['name'],
+                age=int(row['age']),
+                discipline_score=int(row['discipline_score']),
+                force_sensitivity=float(row['force_sensitivity']),
+                expression=expression,
+                truth_values=truth_values
+            )
+            padawans.append(padawan)
+        return padawans
+    except Exception as e:
+        print(f"Failed to load CSV: {e}")
+        return []
+
+def save_padawans_to_csv(padawans, filename):
+    data = []
+    for p in padawans:
+        entry = {
+            "name": p.name,
+            "age": p.age,
+            "discipline_score": p.discipline_score,
+            "force_sensitivity": p.force_sensitivity,
+            "expression": p.expression,
+            "logic_result": p.logic_result
+        }
+        data.append(entry)
+    df = pd.DataFrame(data)
+    df.to_csv(filename, index=False)
+    print(f"\nPadawan results saved to {filename}")
 
 def evaluate_all(padawans):
     for padawan in padawans:
@@ -226,33 +268,46 @@ def generate_padawans(n, expression_type="simple"):
 padawan_list = []
 
 print("\n\nWelcome to the Jedi Padawan Sorting Tool (JPST)")
-print("Please input Padawan profiles to evaluate readiness for training.")
-while True:
-    print("\n--- New Padawan Entry ---")
-    name = input("Enter Padawan name: ").strip()
-    while not name:
-        name = input("Name cannot be empty. Please enter a valid Padawan name: ").strip()
-    age = safe_int("Enter Padawan age (5–25): ", 5, 25)
-    discipline = safe_int("Enter discipline score (0–100): ", 0, 100)
-    force = safe_float("Enter Force sensitivity (0.0–100.0): ", 0.0, 100.0)
-    
-    print("\nPlease answer the following with True or False:")
-    loyal = get_bool("Is the Padawan loyal to the Jedi Code? (t/f): ")
-    impulsive = get_bool("Is the Padawan impulsive? (t/f): ")
-    patient = get_bool("Can the Padawan remain calm and composed? (t/f): ")
+use_csv = input("Would you like to load Padawans from a CSV file? (y/n): ").strip().lower()
+if use_csv == "y":
+    filename = input("Enter the filename (e.g., padawans.csv): ").strip()
+    padawan_list = load_padawans_from_csv(filename)
 
-    expression = "loyal ∧ ¬impulsive ∧ patient"
-    truth_values = {
-    "loyal": loyal,
-    "impulsive": impulsive,
-    "patient": patient}
+# If CSV fails or is skipped, fall back to manual input
+if not padawan_list:
+    print("No Padawans loaded from CSV.")
+    add_more = "y"
+else:
+    add_more = input("Would you like to add more Padawans manually? (y/n): ").strip().lower()
+
+if add_more == "y":
+    print("Please input Padawan profiles to evaluate readiness for training.")
+    while True:
+        print("\n--- New Padawan Entry ---")
+        name = input("Enter Padawan name: ").strip()
+        while not name:
+            name = input("Name cannot be empty. Please enter a valid Padawan name: ").strip()
+        age = safe_int("Enter Padawan age (5–25): ", 5, 25)
+        discipline = safe_int("Enter discipline score (0–100): ", 0, 100)
+        force = safe_float("Enter Force sensitivity (0.0–100.0): ", 0.0, 100.0)
     
-    padawan = Padawan(name, age, discipline, force, expression, truth_values)
-    padawan_list.append(padawan)
+        print("\nPlease answer the following with True or False:")
+        loyal = get_bool("Is the Padawan loyal to the Jedi Code? (t/f): ")
+        impulsive = get_bool("Is the Padawan impulsive? (t/f): ")
+        patient = get_bool("Can the Padawan remain calm and composed? (t/f): ")
+
+        expression = "loyal ∧ ¬impulsive ∧ patient"
+        truth_values = {
+        "loyal": loyal,
+        "impulsive": impulsive,
+        "patient": patient}
     
-    cont = input("\nWould you like to add another Padawan? (y/n): ").strip().lower()
-    if cont != "y":
-        break
+        padawan = Padawan(name, age, discipline, force, expression, truth_values)
+        padawan_list.append(padawan)
+    
+        cont = input("\nWould you like to add another Padawan? (y/n): ").strip().lower()
+        if cont != "y":
+            break
 
 print("\nDate Sorting Options:")
 print("1 - Sort by Discipline (Insertion Sort)")
@@ -347,10 +402,10 @@ print(f"Insertion Sort Time: {insertion_duration:.2f} ms")
 print(f"Merge Sort Time:     {merge_duration:.2f} ms")
 
 
-
-
-
-
+save = input("Would you like to save the results to a CSV? (y/n): ").strip().lower()
+if save == "y":
+    save_filename = input("Enter filename to save to (e.g., results.csv): ").strip()
+    save_padawans_to_csv(padawan_list, save_filename)
 
 
 #
