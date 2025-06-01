@@ -43,8 +43,7 @@ class LogicalExpression(Evaluatable):
         expr = self.expression
         for var, val in self.truth_values.items():
             expr = expr.replace(var, str(val))
-
-    # Now we need to replace logical operators with symbols for Python
+# Now we need to replace logical operators with symbols for Python
         expr = expr.replace("∧", " and ")
         expr = expr.replace("∨", " or ")
         expr = expr.replace("¬", " not ")
@@ -56,6 +55,20 @@ class LogicalExpression(Evaluatable):
             return result
         except Exception as e:
             return f"Error evaluating expression: {e}"
+
+class ReadyAndForceSensitive(Evaluatable):
+    def __init__(self, threshold, padawan):
+        self.threshold = threshold
+        self.padawan = padawan
+
+    def evaluate(self):
+        return self.padawan.logic_result is True and self.padawan.force_sensitivity >= self.threshold
+
+def evaluate_all(padawans):
+    for padawan in padawans:
+        logic = LogicalExpression(padawan.expression, padawan.truth_values)
+        padawan.logic_result = logic.evaluate()
+
 def safe_int(prompt, min_val, max_val):
     while True:
         try:
@@ -123,12 +136,13 @@ def merge(left, right):
     return result
 
 #Linear Search function
-def search_ready_padawans(padawans, min_force=0):
-    ready_list = []
+def search_with_evaluator(padawans, evaluator_class, **kwargs):
+    results = []
     for padawan in padawans:
-        if padawan.logic_result is True and padawan.force_sensitivity >= min_force:
-            ready_list.append(padawan)
-    return ready_list
+        evaluator = evaluator_class(padawan=padawan, **kwargs)
+        if evaluator.evaluate():
+            results.append(padawan)
+    return results
 
 
 #Descriptions for our variables
@@ -186,8 +200,10 @@ print("\n\nWelcome to the Jedi Padawan Sorting Tool (JPST)")
 print("Please input Padawan profiles to evaluate readiness for training.")
 while True:
     print("\n--- New Padawan Entry ---")
-    name = input("Enter Padawan name: ")
-    age = safe_int("Enter Padawan age: ", 1, 100)
+    name = input("Enter Padawan name: ").strip()
+    while not name:
+        name = input("Name cannot be empty. Please enter a valid Padawan name: ").strip()
+    age = safe_int("Enter Padawan age (5–25): ", 5, 25)
     discipline = safe_int("Enter discipline score (0–100): ", 0, 100)
     force = safe_float("Enter Force sensitivity (0.0–100.0): ", 0.0, 100.0)
     
@@ -215,9 +231,7 @@ print("2 - Sort by Force Sensitivity (Merge Sort)")
 
 sort_choice = input("Choose sorting method (1 or 2): ").strip()
 
-for padawan in padawan_list:
-    logic = LogicalExpression(padawan.expression, padawan.truth_values)
-    padawan.logic_result = logic.evaluate()
+evaluate_all(padawan_list)
 
 if sort_choice == "1":
     insertion_sort_by_discipline(padawan_list)
@@ -241,33 +255,27 @@ start_time = time.time()
 merge_list = merge_sort_by_force(merge_list)
 merge_duration = (time.time() - start_time) * 1000  # in milliseconds
 
-# Perfomace results
-print("\nSorting Performance Result")
-print(f"Insertion Sort Time: {insertion_duration:.2f} ms")
-print(f"Merge Sort Time:     {merge_duration:.2f} ms")
-
-
 print("\n\nJedi Council Evaluation Report:\n")
 
 for padawan in padawan_list:
- print("--------------------------------------------------")
- print(padawan)
- print(f"Expression: {padawan.expression}")
- print("With values:")
- for var, val in padawan.truth_values.items():
+    print("--------------------------------------------------")
+    print(padawan)
+    print(f"Expression: {padawan.expression}")
+    print("With values:")
+    for var, val in padawan.truth_values.items():
         meaning = meanings.get(var, "Unknown")
         print(f"  {var} = {val}  -->  {meaning}")
- print(f"\nFinal Result: {padawan.logic_result}")
+    print(f"\nFinal Result: {padawan.logic_result}")
 
-if padawan.logic_result is True:
+    if padawan.logic_result is True:
         print("This Padawan is READY for Jedi training.")
-elif padawan.logic_result is False:
+    elif padawan.logic_result is False:
         print("This Padawan is NOT ready. Further guidance required.")
-else:
+    else:
         print(f"Evaluation Error: {padawan.logic_result}")
 
-# Testing search functions: finding all logic-approved and ready Padawans with force sensitivity >= 50
-matching = search_ready_padawans(padawan_list, min_force=50)
+# Testing search functions: finding all logic-approved and ready Padawans with force sensitivity threshold of 50
+matching = search_with_evaluator(padawan_list,ReadyAndForceSensitive,threshold=50)
 
 print("\n\n Search Results: Ready for training Padawans with Force sensitivity ≥ 50\n")
 if matching:
@@ -275,3 +283,8 @@ if matching:
         print(f"- {p.name} | Force: {p.force_sensitivity} | Discipline: {p.discipline_score}")
 else:
     print("No matching Padawans found.")
+
+# Perfomace results
+print("\nSorting Performance Result")
+print(f"Insertion Sort Time: {insertion_duration:.2f} ms")
+print(f"Merge Sort Time:     {merge_duration:.2f} ms")
