@@ -288,3 +288,56 @@ else:
 print("\nSorting Performance Result")
 print(f"Insertion Sort Time: {insertion_duration:.2f} ms")
 print(f"Merge Sort Time:     {merge_duration:.2f} ms")
+
+
+#Random Padawan Generation system for the User to test app capabilities if they want
+
+use_random = input("Would you like to test the system on a random list? (y/n): ").strip().lower()
+if use_random == "y":
+    print("\nGenerating two lists of 200 Padawans each (simple vs. complex expressions)...")
+
+    # Generate Padawan lists
+    simple_list = generate_padawans(200, "simple")
+    complex_list = generate_padawans(200, "complex")
+
+    # Measure performance for simple logic
+    start = time.time()
+    for p in simple_list:
+        logic = LogicalExpression(p.expression, p.truth_values)
+        p.logic_result = logic.evaluate()
+    insertion_sort_by_discipline(simple_list)
+    simple_time = (time.time() - start) * 1000
+
+    # Measure performance for complex logic
+    start = time.time()
+    for p in complex_list:
+        logic = LogicalExpression(p.expression, p.truth_values)
+        p.logic_result = logic.evaluate()
+    insertion_sort_by_discipline(complex_list)
+    complex_time = (time.time() - start) * 1000
+
+
+    # Print sample Padawans
+    print("\nSample from Simple List:")
+    for padawan in simple_list[:200]:
+        print(padawan)
+
+    print("\nSample from Complex List:")
+    for padawan in complex_list[:200]:
+        print(padawan)
+
+  # Display results
+    max_time = max(simple_time, complex_time)
+    print("\nLogic Analysis Timing for 200 Padawans in each list:")
+    print_bar("Simple Logic List", simple_time, max_time)
+    print_bar("Complex Logic List", complex_time, max_time)
+    
+    matching = search_with_evaluator(complex_list,ReadyAndForceSensitive,threshold=50)
+    print("\n\n Search Results: Ready for training Padawans with Force sensitivity ≥ 50\n")
+    if matching:
+        for p in matching:
+            print(f"- {p.name} | Force: {p.force_sensitivity} | Discipline: {p.discipline_score}")
+        else:
+            print("No matching Padawans found.")
+else:
+    print ("\n Thank you for using JPST! \n We will see you soon :)") 
