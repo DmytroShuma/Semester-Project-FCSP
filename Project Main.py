@@ -144,6 +144,35 @@ def search_with_evaluator(padawans, evaluator_class, **kwargs):
             results.append(padawan)
     return results
 
+#Binary Seach Function 
+def binary_search_ready_padawan(padawans, target_force):
+    low = 0
+    high = len(padawans) - 1
+    results = []
+
+    while low <= high:
+        mid = (low + high) // 2
+        padawan = padawans[mid]
+
+        if padawan.force_sensitivity == target_force:
+            # Check surrounding matches in both directions
+            i = mid
+            while i >= 0 and padawans[i].force_sensitivity == target_force:
+                if padawans[i].logic_result:
+                    results.append(padawans[i])
+                i -= 1
+            i = mid + 1
+            while i < len(padawans) and padawans[i].force_sensitivity == target_force:
+                if padawans[i].logic_result:
+                    results.append(padawans[i])
+                i += 1
+            break
+        elif padawan.force_sensitivity < target_force:
+            low = mid + 1
+        else:
+            high = mid - 1
+
+    return results
 
 #Descriptions for our variables
 meanings = {
@@ -221,7 +250,7 @@ while True:
     padawan = Padawan(name, age, discipline, force, expression, truth_values)
     padawan_list.append(padawan)
     
-    cont = input("Would you like to add another Padawan? (y/n): ").strip().lower()
+    cont = input("\nWould you like to add another Padawan? (y/n): ").strip().lower()
     if cont != "y":
         break
 
@@ -277,7 +306,35 @@ for padawan in padawan_list:
 # Testing search functions: finding all logic-approved and ready Padawans with force sensitivity threshold of 50
 matching = search_with_evaluator(padawan_list,ReadyAndForceSensitive,threshold=50)
 
-print("\n\n Search Results: Ready for training Padawans with Force sensitivity ≥ 50\n")
+print("\nANALYSIS COMPLETE FOR ALL PADAWANS")
+print("\nSearch Options for the Perfect Match:")
+print("1 - Linear Search (Ready & Force ≥ 50)")
+print("2 - Binary Search (Find a Ready Padawan with an exact Force Sensitivity you require)")
+
+search_choice = input("Choose search method (1 or 2): ").strip()
+if search_choice == "1":
+    matching = search_with_evaluator(padawan_list, ReadyAndForceSensitive, threshold=50)
+
+elif search_choice == "2":
+    try:
+        target_force = safe_float("Enter the exact Force Sensitivity value to search for: ", 0.0, 100.0)
+    except ValueError:
+        print("Invalid input. Defaulting to 50.")
+        target_force = 50.0
+
+    # Fail-safe: check if list is sorted by force sensitivity descending
+    if not all(padawan_list[i].force_sensitivity >= padawan_list[i + 1].force_sensitivity for i in range(len(padawan_list) - 1)):
+        print("\nList not sorted by Force Sensitivity. Sorting it now for binary search...")
+        padawan_list = merge_sort_by_force(padawan_list)
+
+    matching = binary_search_ready_padawan(padawan_list, target_force)
+
+else:
+    print("Invalid choice. Defaulting to Linear Search.")
+    matching = search_with_evaluator(padawan_list, ReadyAndForceSensitive, threshold=50)
+
+print("\n\n🔍 Search Results: Perfect Match\n")
+
 if matching:
     for p in matching:
         print(f"- {p.name} | Force: {p.force_sensitivity} | Discipline: {p.discipline_score}")
@@ -290,9 +347,19 @@ print(f"Insertion Sort Time: {insertion_duration:.2f} ms")
 print(f"Merge Sort Time:     {merge_duration:.2f} ms")
 
 
+
+
+
+
+
+
+#
+#
+#
+#
 #Random Padawan Generation system for the User to test app capabilities if they want
 
-use_random = input("Would you like to test the system on a random list? (y/n): ").strip().lower()
+use_random = input("\n\nBONUS: Would you like to test the system on a random list? (y/n): ").strip().lower()
 if use_random == "y":
     print("\nGenerating two lists of 200 Padawans each (simple vs. complex expressions)...")
 
