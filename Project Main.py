@@ -5,6 +5,13 @@ import random
 # It is a tool for evaluating Padawan candidates using logic expressions
 # and numerical attributes to assist Jedi Masters in selecting their apprentices.
 
+from abc import ABC, abstractmethod
+
+class Evaluatable(ABC):             
+    @abstractmethod
+    def evaluate(self):
+        pass
+
 class Padawan:
     
     #Represents a Padawan in the Jedi Order.
@@ -23,7 +30,7 @@ class Padawan:
     def __str__(self):
         return f"{self.name} (Age: {self.age}) | Discipline: {self.discipline_score} | Force: {self.force_sensitivity} | Logic: {self.expression}"
     
-class LogicalExpression:
+class LogicalExpression(Evaluatable):
 #Processes logical expressions for truth table evaluation.
 
     def __init__(self, expression, truth_values):
@@ -49,7 +56,26 @@ class LogicalExpression:
             return result
         except Exception as e:
             return f"Error evaluating expression: {e}"
-        
+def safe_int(prompt, min_val, max_val):
+    while True:
+        try:
+            val = int(input(prompt))
+            if val < min_val or val > max_val:
+                raise ValueError
+            return val
+        except ValueError:
+            print(f"Please enter an integer between {min_val} and {max_val}.")
+
+def safe_float(prompt, min_val, max_val):
+    while True:
+        try:
+            val = float(input(prompt))
+            if val < min_val or val > max_val:
+                raise ValueError
+            return val
+        except ValueError:
+            print(f"Please enter a number between {min_val} and {max_val}.")
+
 def insertion_sort_by_discipline(padawans):   #Insertion sorting function
     # Evaluate logic for all Padawans before sorting
     for padawan in padawans:
@@ -149,38 +175,6 @@ def generate_padawans(n, expression_type="simple"):
     
     return padawans
 
-#Testing random list creation and its logic analysis perfomance
-simple_list = generate_padawans(200, "simple")
-complex_list = generate_padawans(200, "complex")
-
-# Simple logic analysis perfomance
-start = time.time()
-for p in simple_list:
-    logic = LogicalExpression(p.expression, p.truth_values)
-    p.logic_result = logic.evaluate()
-insertion_sort_by_discipline(simple_list)
-simple_time = (time.time() - start) * 1000
-
-# Complex logic analysis perfomance
-start = time.time()
-for p in complex_list:
-    logic = LogicalExpression(p.expression, p.truth_values)
-    p.logic_result = logic.evaluate()
-insertion_sort_by_discipline(complex_list)
-complex_time = (time.time() - start) * 1000
-
-max_time = max(simple_time, complex_time)
-
-# Show results
-for padawan in simple_list:
-    print (padawan)
-
-for padawan in complex_list:
-    print (padawan)
-
-print("\nLogic Analysis Timing for 200 Padawans in each list)")
-print_bar("Simple Logic List", simple_time, max_time)
-print_bar("Complex Logic List", complex_time, max_time)
 
 #
 #
@@ -193,9 +187,9 @@ print("Please input Padawan profiles to evaluate readiness for training.")
 while True:
     print("\n--- New Padawan Entry ---")
     name = input("Enter Padawan name: ")
-    age = int(input("Enter Padawan age: "))
-    discipline = int(input("Enter discipline score (0–100): "))
-    force = float(input("Enter Force sensitivity (0.0–100.0): "))
+    age = safe_int("Enter Padawan age: ", 1, 100)
+    discipline = safe_int("Enter discipline score (0–100): ", 0, 100)
+    force = safe_float("Enter Force sensitivity (0.0–100.0): ", 0.0, 100.0)
     
     print("\nPlease answer the following with True or False:")
     loyal = get_bool("Is the Padawan loyal to the Jedi Code? (t/f): ")
