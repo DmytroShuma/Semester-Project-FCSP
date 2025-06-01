@@ -462,4 +462,4 @@ if use_random == "y":
         else:
             print("No matching Padawans found.")
 else:
-    print ("\n Thank you for using JPST! \n We will see you soon :)") 
+    print ("\n Thank you for using JPST! \n May the Force be with you! :)") 
